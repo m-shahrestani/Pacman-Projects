@@ -109,6 +109,28 @@ def depthFirstSearch(problem):
                 paths.push(current_path + [successor[1]])
     return final_actions
 
+def IDS(problem):
+    fringe = util.Stack()
+    limit = 1
+    while True:
+        is_visited = []
+        fringe.push((problem.getStartState(),[],0))
+        state, final_actions, toCost = fringe.pop()
+        is_visited.append(state)
+        while not problem.isGoalState(state):
+            successors = problem.getSuccessors(state)
+            for successor in successors:
+                if (not successor[0] in is_visited) and (toCost + successor[2] <= limit):
+                    fringe.push((successor[0],final_actions + [successor[1]],toCost + successor[2]))
+                    is_visited.append(successor[0])
+            if fringe.isEmpty():
+                break
+            state, final_actions, toCost = fringe.pop()
+        if problem.isGoalState(state):
+            return final_actions
+        if limit < 100:
+            limit += 1
+
 def breadthFirstSearch(problem):
     """Search the shallowest nodes in the search tree first."""
     fringe = util.Queue()
