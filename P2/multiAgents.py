@@ -298,8 +298,45 @@ class ExpectimaxAgent(MultiAgentSearchAgent):
         All ghosts should be modeled as choosing uniformly at random from their
         legal moves.
         """
-        "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+
+        def maxLevel(gameState, depth):
+            currDepth = depth + 1
+            if gameState.isWin() or gameState.isLose() or currDepth == self.depth:
+                return self.evaluationFunction(gameState)
+            maxvalue = -999999
+            actions_to_check = gameState.getLegalActions(0)
+            for action_to_check in actions_to_check:
+                successor = gameState.generateSuccessor(0, action_to_check)
+                maxvalue = max(maxvalue, expectLevel(successor, currDepth, 1))
+            return maxvalue
+
+        def expectLevel(gameState, depth, agentIndex):
+            if gameState.isWin() or gameState.isLose():
+                return self.evaluationFunction(gameState)
+            actions_in_method = gameState.getLegalActions(agentIndex)
+            totalexpectedvalue = 0
+            numberofactions = len(actions_in_method)
+            for action_to_check in actions_in_method:
+                successor = gameState.generateSuccessor(agentIndex, action_to_check)
+                if agentIndex == (gameState.getNumAgents() - 1):
+                    expectedvalue = maxLevel(successor, depth)
+                else:
+                    expectedvalue = expectLevel(successor, depth, agentIndex + 1)
+                totalexpectedvalue = totalexpectedvalue + expectedvalue
+            if numberofactions == 0:
+                return 0
+            return float(totalexpectedvalue) / float(numberofactions)
+
+        actions = gameState.getLegalActions(0)
+        currentScore = -999999
+        returnAction = ''
+        for action in actions:
+            nextState = gameState.generateSuccessor(0, action)
+            score = expectLevel(nextState, 0, 1)
+            if score > currentScore:
+                returnAction = action
+                currentScore = score
+        return returnAction
 
 def betterEvaluationFunction(currentGameState):
     """
