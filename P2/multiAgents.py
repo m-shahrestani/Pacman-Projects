@@ -240,8 +240,51 @@ class AlphaBetaAgent(MultiAgentSearchAgent):
         """
         Returns the minimax action using self.depth and self.evaluationFunction
         """
-        "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+
+        val = -10000.0
+        alpha = -10000.0
+        beta = 10000.0
+        actionSeq = []
+        moves = gameState.getLegalActions(0)
+        for move in gameState.getLegalActions(0):
+            state = gameState.generateSuccessor(0, move)
+            t = self.minimaxPrune(1, range(gameState.getNumAgents()), state, self.depth, self.evaluationFunction,
+                                  alpha, beta)
+            if t > val:
+                val = t
+                actionSeq = move
+            if val > beta:
+                return actionSeq
+            alpha = max(alpha, val)
+        return actionSeq
+
+    def minimaxPrune(self, agent, agents, state, depth, eval_function, alpha, beta):
+        if depth <= 0 or state.isWin() or state.isLose():
+            return eval_function(state)
+
+        val = -9999999.0 if agent == 0 else 9999999.0
+
+        for move in state.getLegalActions(agent):
+            successor = state.generateSuccessor(agent, move)
+            if agent == agents[-1]:
+                val = min(val, self.minimaxPrune(agents[0], agents, successor, depth - 1, eval_function, alpha, beta))
+                beta = min(beta, val)
+                if val < alpha:
+                    return val
+            elif agent == 0:
+                val = max(val,
+                          self.minimaxPrune(agents[agent + 1], agents, successor, depth, eval_function, alpha, beta))
+                alpha = max(alpha, val)
+                if val > beta:
+                    return val
+            else:
+                val = min(val,
+                          self.minimaxPrune(agents[agent + 1], agents, successor, depth, eval_function, alpha, beta))
+                beta = min(beta, val)
+                if val < alpha:
+                    return val
+        return val
+
 
 class ExpectimaxAgent(MultiAgentSearchAgent):
     """
