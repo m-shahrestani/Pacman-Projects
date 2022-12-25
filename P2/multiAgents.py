@@ -347,14 +347,34 @@ def betterEvaluationFunction(currentGameState):
     DESCRIPTION: <write something here so we know what you did>
     """
 
-    pacmanPosition = currentGameState.getPacmanPosition()
-    foods = currentGameState.getFood()
-    ghostStates = currentGameState.getGhostStates()
-    scaredTimers = [ghostState.scaredTimer for ghostState in ghostStates]
-    ghostPositions = currentGameState.getGhostPositions()
-    
-    "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    newPos = currentGameState.getPacmanPosition()
+    newFood = currentGameState.getFood()
+    newGhostStates = currentGameState.getGhostStates()
+    new_scared_times = [ghostState.scaredTimer for ghostState in newGhostStates]
+
+    food_distance = [0]
+    for pos in newFood.asList():
+        food_distance.append(manhattanDistance(newPos, pos))
+
+    ghost_distance = [0]
+    for pos in [ghost.getPosition() for ghost in newGhostStates]:
+        ghost_distance.append(manhattanDistance(newPos, pos))
+
+    number_of_power_pellets = len(currentGameState.getCapsules())
+
+    score = 0
+    distance = 1.0 / sum(food_distance) if sum(food_distance) > 0 else 0
+    sumScaredTimes = sum(new_scared_times)
+    sumGhostDistance = sum(ghost_distance)
+    numberOfNoFoods = len(newFood.asList(False))
+
+    score += currentGameState.getScore() + distance + numberOfNoFoods
+
+    if sumScaredTimes > 0:
+        score += sumScaredTimes - number_of_power_pellets - sumGhostDistance
+    else:
+        score += sumGhostDistance + number_of_power_pellets
+    return score
 
 # Abbreviation
 better = betterEvaluationFunction
