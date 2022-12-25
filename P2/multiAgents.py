@@ -67,14 +67,81 @@ class ReflexAgent(Agent):
         to create a masterful evaluation function.
         """
         # Useful information you can extract from a GameState (pacman.py)
-        successorGameState = currentGameState.generatePacmanSuccessor(action)
-        newPos = successorGameState.getPacmanPosition()
-        newFood = successorGameState.getFood()
-        newGhostStates = successorGameState.getGhostStates()
-        newScaredTimes = [ghostState.scaredTimer for ghostState in newGhostStates]
+        successor_game_state = currentGameState.generatePacmanSuccessor(action)
+        new_pos = successor_game_state.getPacmanPosition()
+        new_food = successor_game_state.getFood()
+        new_ghost_states = successor_game_state.getGhostStates()
+        new_scared_times = [ghostState.scaredTimer for ghostState in new_ghost_states]
+        scared_time = min(new_scared_times)
 
-        "*** YOUR CODE HERE ***"
-        return successorGameState.getScore()
+        current_food_list = currentGameState.getFood().asList()
+        current_cap = currentGameState.getCapsules()
+
+        new_food_list = new_food.asList()
+        new_capsules = successor_game_state.getCapsules()
+
+        closest_food_dist = 9999999
+        farthest_food_dist = -9999999
+        closest_cap_dist = 9999999
+        closest_ghost = 9999999
+        evaluation = 0
+        found_closest_food = False
+        found_farthest_food = False
+        found_closest_cap = False
+
+        for food in new_food_list:
+            dist = manhattanDistance(new_pos, food)
+            if dist < closest_food_dist and dist != 0:
+                closest_food_dist = dist
+                closest_food_position = food
+                found_closest_food = True
+
+        if found_closest_food:
+            evaluation += 1000.0 / closest_food_dist
+
+        if found_closest_food:
+            for food in new_food_list:
+                dist = manhattanDistance(food, closest_food_position)
+                if dist > farthest_food_dist and dist != 0:
+                    farthest_food_dist = dist
+                    found_farthest_food = True
+
+        if found_farthest_food:
+            evaluation += 1000.0 / farthest_food_dist
+
+        for capsule in new_capsules:
+            dist = manhattanDistance(capsule, new_pos)
+            if dist < closest_cap_dist and dist != 0:
+                closest_cap_dist = dist
+                found_closest_cap = True
+
+        if found_closest_cap:
+            evaluation += 1000.0 / closest_cap_dist
+
+        for ghost in new_ghost_states:
+            dist = manhattanDistance(ghost.getPosition(), new_pos)
+            if dist < closest_ghost:
+                closest_ghost = dist
+
+        evaluation += closest_ghost
+        if len(new_food_list) < len(current_food_list):
+            evaluation += 10000.0
+
+        if len(new_capsules) < len(current_cap):
+            evaluation += 10000.0
+
+        if (len(new_capsules) < len(current_cap)) and scared_time < 2:
+            evaluation += 15000.0
+
+        evaluation += 10000.0
+        if scared_time > closest_ghost:
+            evaluation += 10000.0
+
+        if closest_ghost < 2:
+            if scared_time < 2:
+                evaluation -= 100000.0
+
+        return evaluation
 
 def scoreEvaluationFunction(currentGameState):
     """
