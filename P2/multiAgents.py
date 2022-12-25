@@ -201,8 +201,35 @@ class MinimaxAgent(MultiAgentSearchAgent):
         gameState.isLose():
         Returns whether or not the game state is a losing state
         """
-        "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        legalMoves = gameState.getLegalActions(0)
+        futureStates = [gameState.generateSuccessor(0, move) for move in legalMoves]
+
+        scores = [self.minimizer(0, state, 1) for state in futureStates]
+        bestScore = max(scores)
+        bestIndices = [index for index in range(len(scores)) if scores[index] == bestScore]
+        chosenIndex = random.choice(bestIndices)  # Pick randomly among the best
+
+        return legalMoves[chosenIndex]
+
+    def maximizer(self, currentDepth, gameState):
+        if self.depth == currentDepth or gameState.isLose() or gameState.isWin():
+            return self.evaluationFunction(gameState)
+
+        return max([self.minimizer(currentDepth, state, 1) for state in
+                    [gameState.generateSuccessor(0, move) for move in gameState.getLegalActions(0)]])
+
+    def minimizer(self, currentDepth, gameState, ghostIndex):
+        if self.depth == currentDepth or gameState.isLose() or gameState.isWin():
+            return self.evaluationFunction(gameState)
+
+        elif ghostIndex + 1 >= gameState.getNumAgents():
+            return min([self.maximizer(currentDepth + 1, state) for state in
+                        [gameState.generateSuccessor(ghostIndex, move) for move in
+                         gameState.getLegalActions(ghostIndex)]])
+
+        return min([self.minimizer(currentDepth, state, ghostIndex + 1) for state in
+                    [gameState.generateSuccessor(ghostIndex, move) for move in
+                     gameState.getLegalActions(ghostIndex)]])
 
 class AlphaBetaAgent(MultiAgentSearchAgent):
     """
