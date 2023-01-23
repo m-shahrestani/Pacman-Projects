@@ -14,4 +14,4 @@ This repository conatains my univerisity projects for my ***Principles & Applica
 * Project 4: [Ghostbusters](http://ai.berkeley.edu/tracking.html)
 
 ## Principles & Applications of Artificial Intelligence
-The ***Principles & Applications of Artificial Intelligence*** course in Spring 2022 at the Computer Engineering Department in Amirkabir University of Technology is taught by: Asst. Prof. [Mahdi Javanmardi](https://scholar.google.co.jp/citations?user=6Za8HuYAAAAJ&hl=en)
+The ***Principles & Applications of Artificial Intelligence*** course in Fall 2022 at the Computer Engineering Department in Amirkabir University of Technology is taught by: Asst. Prof. [Mahdi Javanmardi](https://scholar.google.co.jp/citations?user=6Za8HuYAAAAJ&hl=en)
